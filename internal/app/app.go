@@ -1,27 +1,27 @@
-package server
+package app
 
 import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi"
 )
 
-type server struct {
-	router *mux.Router
+type app struct {
+	router *chi.Mux
 	// TODO DB
 	// TODO Redis
 }
 
-func New() *server {
-	srv := &server{}
-	srv.routes()
-	return srv
+func New() *app {
+	a := &app{}
+	a.routes()
+	return a
 }
 
-// ServeHTTP turns the server into an HTTP handler
-func (srv *server) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	srv.router.ServeHTTP(w, req)
+// ServeHTTP turns the app into an HTTP handler
+func (a *app) ServeHTTP(w http.ResponseWriter, req *http.Request) {
+	a.router.ServeHTTP(w, req)
 }
 
 func receive(req *http.Request, data interface{}) error {

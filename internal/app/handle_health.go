@@ -1,4 +1,4 @@
-package server
+package app
 
 import (
 	"net/http"
@@ -6,7 +6,7 @@ import (
 	"github.com/jaredpetersen/go-rest-example/internal/health"
 )
 
-func (srv *server) handleHealth() http.HandlerFunc {
+func (a *app) handleHealth() http.HandlerFunc {
 	type response struct {
 		Up bool `json:"up"`
 	}

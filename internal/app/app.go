@@ -5,12 +5,13 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/go-redis/redis/v8"
 )
 
 type app struct {
 	router *chi.Mux
 	// TODO DB
-	// TODO Redis
+	Redis *redis.Client
 }
 
 func New() *app {
@@ -25,6 +26,8 @@ func (a *app) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func receive(req *http.Request, data interface{}) error {
+	// raw, _ := io.ReadAll(req.Body)
+	// log.Debug().Str("raw", string(raw)).Send()
 	return json.NewDecoder(req.Body).Decode(data)
 }
 
@@ -45,5 +48,7 @@ func respondError(w http.ResponseWriter, error string, statusCode int) {
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	json.NewEncoder(w).Encode(&response{Message: error})
+	if error != "" {
+		json.NewEncoder(w).Encode(&response{Message: error})
+	}
 }

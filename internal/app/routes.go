@@ -29,6 +29,9 @@ func (a *app) routes() {
 	a.router.Use(hlog.UserAgentHandler("user_agent"))
 	a.router.Use(hlog.RefererHandler("referer"))
 
+	a.router.Get("/dummy/{id}", a.handleDummyGet())
+	a.router.Post("/dummy", a.handleDummyNew())
+
 	a.router.Get("/health", a.handleHealth())
 
 	a.router.NotFound(a.handleNotFound())

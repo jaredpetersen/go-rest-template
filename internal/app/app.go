@@ -6,12 +6,18 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/go-redis/redis/v8"
+	"github.com/rs/zerolog/log"
 )
 
 type app struct {
 	router *chi.Mux
 	// TODO DB
 	Redis *redis.Client
+}
+
+type AppError struct {
+	Public   error
+	Internal error
 }
 
 func New() *app {
@@ -40,15 +46,17 @@ func respond(w http.ResponseWriter, data interface{}, statusCode int) {
 	}
 }
 
-func respondError(w http.ResponseWriter, error string, statusCode int) {
+func respondError(w http.ResponseWriter, appErr AppError, statusCode int) {
 	type response struct {
 		Message string `json:"message"`
 	}
 
+	log.Error().AnErr("public", appErr.Public).AnErr("internal", appErr.Internal).Send()
+
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	if error != "" {
-		json.NewEncoder(w).Encode(&response{Message: error})
+	if appErr.Public != nil {
+		json.NewEncoder(w).Encode(&response{Message: appErr.Public.Error()})
 	}
 }

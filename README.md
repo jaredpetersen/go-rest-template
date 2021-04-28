@@ -37,10 +37,7 @@ Load data:
 curl -X POST localhost:8080/dummy \
     -H 'Accept: application/json' \
     -d '{
-        "id": "6ed70dd5-4c34-4a24-b11f-1cdf1c9f69a0",
-        "name": "something",
-        "date_created": "2021-04-21T19:44:07Z",
-        "last_updated": "2021-04-21T19:44:07Z"
+        "name": "something"
     }'
 ```
 

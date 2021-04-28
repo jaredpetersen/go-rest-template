@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 )
 
@@ -33,6 +35,16 @@ func Get(ctx context.Context, rdb *redis.Client, id string) (*Dummy, error) {
 }
 
 func New(ctx context.Context, rdb *redis.Client, dummy Dummy) error {
+	if dummy.Id == "" {
+		dummy.Id = uuid.New().String()
+	}
+	if dummy.DateCreated == "" {
+		dummy.DateCreated = time.Now().Format(time.RFC3339)
+	}
+	if dummy.LastUpdated == "" {
+		dummy.LastUpdated = time.Now().Format(time.RFC3339)
+	}
+
 	key := "DUMMY." + dummy.Id
 	value, err := json.Marshal(dummy)
 	if err != nil {

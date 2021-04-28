@@ -18,11 +18,12 @@ func (a *app) handleDummyGet() http.HandlerFunc {
 
 		val, err := dummy.Get(req.Context(), a.Redis, id)
 		if err != nil {
-			respondError(w, err.Error(), http.StatusUnprocessableEntity)
+			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
+			return
 		}
 
 		if val == nil {
-			respondError(w, "", http.StatusNotFound)
+			respond(w, nil, http.StatusNotFound)
 		} else {
 			res := &response{
 				Id:   val.Id,
@@ -34,16 +35,23 @@ func (a *app) handleDummyGet() http.HandlerFunc {
 }
 
 func (a *app) handleDummyNew() http.HandlerFunc {
+	type request struct {
+		Name string `json:"name"`
+	}
+
 	return func(w http.ResponseWriter, req *http.Request) {
-		d := &dummy.Dummy{}
-		err := receive(req, d)
+		val := request{}
+		err := receive(req, val)
 		if err != nil {
-			respondError(w, err.Error(), http.StatusUnprocessableEntity)
+			respondError(w, AppError{Internal: err}, http.StatusBadRequest)
+			return
 		}
 
-		err = dummy.New(req.Context(), a.Redis, *d)
+		err = dummy.New(req.Context(), a.Redis, (*dummy.Dummy)(&val))
+
 		if err != nil {
-			respondError(w, err.Error(), http.StatusUnprocessableEntity)
+			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
+			return
 		}
 	}
 }

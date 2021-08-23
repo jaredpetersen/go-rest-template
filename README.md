@@ -18,30 +18,74 @@ easier to define the routes of your API while staying true to the standard libra
 It also provides nice middleware support that runs for all requests, unlike popular alternative
 [gorilla/mux](https://github.com/gorilla/mux/issues/416).
 
-[go-redis/redis] is used for all Redis communication. go-redis is the only officially-recommended Redis client for Go that employes
-type-safety when executing commands. It supports Redis clusters, pipelining, and pub/sub and has a large, active community.
+[go-redis/redis](https://github.com/go-redis/redis) is used for all Redis communication. go-redis is the only officially-recommended Redis
+client for Go that employes type-safety when executing commands. It supports Redis clusters, pipelining, and pub/sub and has a large,
+active community.
+
+## Techniques at Play
+We are defining our own interfaces and wrapping *some* third party libraries for a couple of reasons:
+
+1. Interfaces are critical in Go for stubbing/mocking dependencies and injecting those replacements for unit testing purposes
+(["accept interfaces, return structs"](https://medium.com/@cep21/what-accept-interfaces-return-structs-means-in-go-2fe879e25ee8)). However,
+idiomatic Go libraries [generally should not export interfaces](https://github.com/golang/go/wiki/CodeReviewComments#interfaces). library users are
+instead advised to define their own abbreviated interfaces that only specify the code that is actually being used from the library and
+[implement those interfaces by wrapping the library code](https://rakyll.org/interface-pollution/). This is primarily because of how
+interfaces in Go are designed; interfaces are implicit rather than explicit and adding new functions to an interface breaks all instances
+of that interface because they must now implement that new function. This is particularly problematic in a library setting where you have
+many users depending on an exported interface and creating their own implementations as needed. If the library
+user instead creates their own minimal interface, a breakage would not occur.
+
+2. Wrapping a third-party library protects your project from future breaking changes and enables you to switch the underlying library or
+technology safely without modifying a lot of code everywhere. Modifications can be made under the hood in the wrapper without the callers
+needing to be aware of the change. This is a somewhat debated
+[practice outside of the Go realm](https://softwareengineering.stackexchange.com/questions/107338/) that the Go language
+designers effectively enshrined into the language when the typing and interface systems were built.
+
+## Build & Develop
+Make is used to script all of the necessary development actions into a single easy command.
+
+Build application:
+```
+make build
+```
+
+Execute tests:
+```
+make test
+```
+
+Or do both at once:
+```
+make all
+```
 
 ## Usage
 Set up Redis:
 ```zsh
+# TODO set up docker compose
 docker run --name redis -p 6379:6379 -d redis:6
 ```
 
-Build application:
+Build and run application:
 ```zsh
-go build
+make run
 ```
 
 Load data:
 ```zsh
-curl -X POST localhost:8080/dummy \
+curl -vX POST localhost:8080/tasks \
     -H 'Accept: application/json' \
     -d '{
-        "name": "something"
+        "description": "buy socks"
     }'
 ```
 
 Retrieve data:
 ```zsh
-curl localhost:8080/dummy/6ed70dd5-4c34-4a24-b11f-1cdf1c9f69a0
+curl -v localhost:8080/tasks/<ID>
+```
+
+Get health:
+```zsh
+curl -v localhost:8080/health
 ```

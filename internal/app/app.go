@@ -5,14 +5,15 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/go-redis/redis/v8"
 	"github.com/rs/zerolog/log"
+
+	"github.com/jaredpetersen/go-rest-example/internal/redis"
 )
 
 type app struct {
 	router *chi.Mux
 	// TODO DB
-	Redis *redis.Client
+	Redis redis.Client
 }
 
 type AppError struct {

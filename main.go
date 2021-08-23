@@ -1,12 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
-	"os"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/jaredpetersen/go-rest-example/internal/app"
+	"github.com/jaredpetersen/go-rest-example/internal/redis"
 	"github.com/rs/zerolog/log"
 )
 
@@ -14,20 +14,22 @@ func main() {
 	a := app.New()
 
 	// Setup Redis
-	redisOptions, err := redis.ParseURL("redis://localhost:6379")
+	rCfg := redis.Config{URI: "redis://localhost:6379"}
+	rdb, err := redis.New(rCfg)
 	if err != nil {
-		log.Error().Err(err).Msg("Failed to connect to Redis")
-		os.Exit(1)
+		log.Fatal().Err(err).Msg("Failed to connect to Redis")
 	}
+	a.Redis = rdb
 
-	a.Redis = redis.NewClient(redisOptions)
-
+	addr := 8080
 	srv := &http.Server{
-		Addr:         ":8080",
+		Addr:         fmt.Sprintf(":%d", addr),
 		Handler:      a,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 10 * time.Second,
 	}
+
+	log.Info().Int("port", addr).Msg("Started")
 
 	err = srv.ListenAndServe()
 	if err != nil {

@@ -7,7 +7,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/rs/zerolog/log"
 
-	"github.com/jaredpetersen/go-rest-example/internal/redis"
+	"github.com/jaredpetersen/go-rest-template/internal/redis"
 )
 
 type app struct {

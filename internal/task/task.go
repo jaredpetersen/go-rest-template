@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jaredpetersen/go-rest-example/internal/redis"
+	"github.com/jaredpetersen/go-rest-template/internal/redis"
 	"github.com/rs/zerolog/log"
 )
 

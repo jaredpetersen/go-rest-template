@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jaredpetersen/go-rest-example/internal/app"
-	"github.com/jaredpetersen/go-rest-example/internal/redis"
+	"github.com/jaredpetersen/go-rest-template/internal/app"
+	"github.com/jaredpetersen/go-rest-template/internal/redis"
 	"github.com/rs/zerolog/log"
 )
 

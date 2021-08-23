@@ -7,9 +7,9 @@ GOCLEAN=$(GOCMD) clean
 
 all: test build
 build:
-	$(GOBUILD) -o $(BINARY_NAME) -v
+	$(GOBUILD) -o $(BINARY_NAME)
 test:
-	$(GOTEST) -v ./...
+	$(GOTEST) ./...
 clean:
 	$(GOCLEAN)
 	rm -f $(BINARY_NAME)

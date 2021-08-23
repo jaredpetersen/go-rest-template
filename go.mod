@@ -1,4 +1,4 @@
-module github.com/jaredpetersen/go-rest-example
+module github.com/jaredpetersen/go-rest-template
 
 go 1.16
 

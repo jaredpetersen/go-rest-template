@@ -3,7 +3,7 @@ package app
 import (
 	"net/http"
 
-	"github.com/jaredpetersen/go-rest-example/internal/health"
+	"github.com/jaredpetersen/go-rest-template/internal/health"
 )
 
 func (a *app) handleHealth() http.HandlerFunc {

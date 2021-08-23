@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi"
-	"github.com/jaredpetersen/go-rest-example/internal/task"
+	"github.com/jaredpetersen/go-rest-template/internal/task"
 )
 
 func (a *app) handleTaskGet() http.HandlerFunc {

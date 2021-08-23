@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/jaredpetersen/go-rest-example/internal/redis"
+	"github.com/jaredpetersen/go-rest-template/internal/redis"
 )
 
 type redisClientStub struct {

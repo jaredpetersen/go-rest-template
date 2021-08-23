@@ -8,4 +8,5 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/rs/xid v1.3.0 // indirect
 	github.com/rs/zerolog v1.23.0
+	github.com/stretchr/testify v1.7.0
 )

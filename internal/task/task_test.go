@@ -2,55 +2,61 @@ package task
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"testing"
-	"time"
 
-	"github.com/jaredpetersen/go-rest-template/internal/redis"
+	"github.com/stretchr/testify/mock"
+
+	redisMock "github.com/jaredpetersen/go-rest-template/internal/redis/mocks"
 )
 
-type redisClientStub struct {
-	redis.Client
-	getFunc func(ctx context.Context, key string) (*string, error)
-	setFunc func(ctx context.Context, key string, value interface{}, expiration time.Duration) error
-}
+func taskMatcher(expectedTask Task) func(value []byte) bool {
+	return func(value []byte) bool {
+		var unmarshaledTask Task
+		err := json.Unmarshal(value, &unmarshaledTask)
+		if err != nil {
+			return false
+		}
 
-func (rs *redisClientStub) Get(ctx context.Context, key string) (*string, error) {
-	return rs.getFunc(ctx, key)
-}
-
-func (rs *redisClientStub) Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-	return rs.setFunc(ctx, key, value, expiration)
+		return expectedTask == unmarshaledTask
+	}
 }
 
 func TestSave(t *testing.T) {
 	ctx := context.Background()
 
-	rdb := redisClientStub{}
-	rdb.setFunc = func(ctx context.Context, key string, value interface{}, expiration time.Duration) error {
-		return nil
-	}
+	task := New()
 
-	task := Task{}
+	rdb := redisMock.Client{}
+	rdb.On("Set", mock.Anything, "task."+task.Id, mock.MatchedBy(taskMatcher(*task)), mock.Anything).Return(nil)
 
-	err := Save(ctx, &rdb, task)
+	err := Save(ctx, &rdb, *task)
 	if err != nil {
 		t.Error("Encountered error", err)
 	}
+
+	rdb.AssertExpectations(t)
 }
 
 func TestGet(t *testing.T) {
 	ctx := context.Background()
 
-	rdb := redisClientStub{}
-	rdb.getFunc = func(ctx context.Context, key string) (s *string, e error) {
-		val := "{\"description\":\"buy socks\"}"
-		return &val, nil
-	}
-
 	id := "2b7e1292-a831-4df5-b00e-3105a51111bb"
+	description := "buy socks"
+	storedTask := fmt.Sprintf("{\"description\":\"%s\"}", description)
 
-	_, err := Get(ctx, &rdb, id)
+	rdb := redisMock.Client{}
+	rdb.On("Get", mock.Anything, "task."+id).Return(&storedTask, nil)
+
+	task, err := Get(ctx, &rdb, id)
 	if err != nil {
 		t.Error("Encountered error", err)
 	}
+
+	if *task != (Task{Description: description}) {
+		t.Error("Invalid task")
+	}
+
+	rdb.AssertExpectations(t)
 }

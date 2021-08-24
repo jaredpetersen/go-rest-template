@@ -14,8 +14,8 @@ build:
 generate:
 	$(MOCKGEN_CMD) --dir internal/redis --output internal/redis/mocks --all
 test: generate
-	$(GO_TEST) -coverprofile coverage.out ./...
-	$(GO_COVER) -html=coverage.out -o coverage.html
+	$(GO_TEST) -coverprofile cover.out ./...
+	$(GO_COVER) -html=cover.out -o cover.html
 clean:
 	$(GO_CLEAN)
 	rm -f $(BINARY_NAME)

@@ -1,13 +1,13 @@
 package health
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
 
 func TestCheck(t *testing.T) {
-	expectedStatus := Status{Up: true}
-
 	status := Check()
 
-	if *status != expectedStatus {
-		t.Error("health returns incorrect status")
-	}
+	assert.Equal(t, Status{Up: true}, *status, "Status is incorrect")
 }

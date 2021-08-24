@@ -1,3 +1,5 @@
 go-rest-template
 mocks/
+coverage.out
+coverage.html
 .DS_Store

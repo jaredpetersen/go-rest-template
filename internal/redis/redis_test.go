@@ -43,6 +43,7 @@ func setupRedis(ctx context.Context) (*redisContainer, error) {
 		Image:        "redis:6",
 		ExposedPorts: []string{"6379/tcp"},
 		WaitingFor:   wait.ForLog("* Ready to accept connections"),
+		SkipReaper:   true,
 	}
 	container, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,

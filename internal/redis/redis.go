@@ -1,3 +1,4 @@
+// Package redis serves as an abstraction layer over a Redis cient library implementation.
 package redis
 
 import (

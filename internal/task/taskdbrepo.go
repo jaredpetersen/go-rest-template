@@ -23,12 +23,12 @@ func (dbr *DBRepo) Get(ctx context.Context, id string) (*Task, error) {
 		from task
 		where id = $1`
 	row := dbr.sdb.QueryRowContext(ctx, query, id)
-	if row == nil {
-		return nil, nil
-	}
 
 	tsk := Task{Id: id}
 	err := row.Scan(&tsk.Description, &tsk.DateDue, &tsk.DateCreated, &tsk.DateUpdated)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +44,8 @@ func (dbr *DBRepo) Save(ctx context.Context, t Task) error {
 		t.Id,
 		t.Description,
 		t.DateDue,
-		t.DateCreated.UTC(),
-		t.DateUpdated.UTC())
+		t.DateCreated,
+		t.DateUpdated)
 
 	return err
 }

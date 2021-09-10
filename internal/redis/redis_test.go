@@ -88,7 +88,11 @@ func TestNewReturnsConfigError(t *testing.T) {
 	}
 }
 
-func TestGetNoKey(t *testing.T) {
+func TestIntegrationGetNoKey(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")
@@ -105,7 +109,11 @@ func TestGetNoKey(t *testing.T) {
 	assert.Nil(t, val, "Retrieved value pointer is not nil")
 }
 
-func TestSetGet(t *testing.T) {
+func TestIntegrationSetGet(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")
@@ -151,7 +159,11 @@ func TestSetGet(t *testing.T) {
 	}
 }
 
-func TestSetTTL(t *testing.T) {
+func TestIntegrationSetTTL(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")
@@ -174,7 +186,11 @@ func TestSetTTL(t *testing.T) {
 	assert.GreaterOrEqual(t, ttl.Seconds(), 20.0)
 }
 
-func TestSetTTLNoExpiration(t *testing.T) {
+func TestIntegrationSetTTLNoExpiration(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")
@@ -194,7 +210,11 @@ func TestSetTTLNoExpiration(t *testing.T) {
 	assert.Equal(t, time.Duration(-1), ttl)
 }
 
-func TestTTLNoKey(t *testing.T) {
+func TestIntegrationTTLNoKey(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")
@@ -210,7 +230,11 @@ func TestTTLNoKey(t *testing.T) {
 	assert.Equal(t, time.Duration(-2), ttl)
 }
 
-func TestCloset(t *testing.T) {
+func TestIntegrationCloset(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 	redisContainer, err := setupRedis(ctx)
 	require.NoError(t, err, "Failed to start up Redis container")

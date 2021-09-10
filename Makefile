@@ -17,6 +17,9 @@ generate:
 test: generate
 	$(GO_TEST) -coverprofile cover.out ./...
 	$(GO_COVER) -html=cover.out -o cover.html
+testshort: generate
+	$(GO_TEST) -short -coverprofile cover.out ./...
+	$(GO_COVER) -html=cover.out -o cover.html
 clean:
 	$(GO_CLEAN)
 	rm -f $(BINARY_NAME)

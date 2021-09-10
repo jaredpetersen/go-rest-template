@@ -41,6 +41,10 @@ needing to be aware of the change. This is a somewhat debated
 [practice outside of the Go realm](https://softwareengineering.stackexchange.com/questions/107338/) that the Go language
 designers effectively enshrined into the language when the typing and interface systems were built.
 
+TODO more explanation about testing techniques
+
+We use the short flag to skip anything that can take a bit to set up -- namely integration tests.
+
 ## Build & Develop
 Make is used to script all of the necessary development actions into a single easy command.
 

@@ -71,7 +71,11 @@ func truncateCockroachDB(ctx context.Context, db sql.DB) error {
 	return err
 }
 
-func TestDBRepoSaveGet(t *testing.T) {
+func TestIntegrationDBRepoSaveGet(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 
 	cdbContainer, err := setupCockroachDB(ctx)
@@ -116,7 +120,11 @@ func TestDBRepoSaveGet(t *testing.T) {
 	}
 }
 
-func TestDBRepoSaveDBError(t *testing.T) {
+func TestIntegrationDBRepoSaveDBError(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 
 	cdbContainer, err := setupCockroachDB(ctx)
@@ -135,7 +143,11 @@ func TestDBRepoSaveDBError(t *testing.T) {
 	require.Error(t, err, "Save did not return error")
 }
 
-func TestDBRepoGetNonexistent(t *testing.T) {
+func TestIntegrationDBRepoGetNonexistent(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 
 	cdbContainer, err := setupCockroachDB(ctx)
@@ -157,7 +169,11 @@ func TestDBRepoGetNonexistent(t *testing.T) {
 	assert.Nil(t, tsk, "Get returned a task")
 }
 
-func TestDBRepoGetDBError(t *testing.T) {
+func TestIntegrationDBRepoGetDBError(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
 	ctx := context.Background()
 
 	cdbContainer, err := setupCockroachDB(ctx)

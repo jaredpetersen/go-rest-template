@@ -2,22 +2,28 @@ package app
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
+	"github.com/jaredpetersen/go-rest-template/internal/taskservice"
 )
 
 func (a *app) handleTaskGet() http.HandlerFunc {
 	type response struct {
-		Id          string  `json:"id"`
-		Description string  `json:"description"`
-		DateDue     *string `json:"date_due"`
+		Id          string     `json:"id"`
+		Description string     `json:"description"`
+		DateDue     *time.Time `json:"date_due,string"`
 	}
+
+	// Set up dependencies specific to the handler here
+	tcr := task.NewCacheRepo(a.Redis)
+	tdbr := task.NewDBRepo(a.DB)
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		id := chi.URLParam(req, "id")
 
-		val, err := task.Get(req.Context(), a.Redis, id)
+		val, err := taskservice.Get(req.Context(), tcr, tdbr, id)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
 			return
@@ -39,12 +45,16 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 
 func (a *app) handleTaskSave() http.HandlerFunc {
 	type request struct {
-		Description string  `json:"description"`
-		DateDue     *string `json:"date_due"`
+		Description string     `json:"description"`
+		DateDue     *time.Time `json:"date_due,string"`
 	}
 	type response struct {
 		Id string `json:"id"`
 	}
+
+	// Set up dependencies specific to the handler here
+	tcr := task.NewCacheRepo(a.Redis)
+	tdbr := task.NewDBRepo(a.DB)
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		val := new(request)
@@ -58,7 +68,7 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 		t.Description = val.Description
 		t.DateDue = val.DateDue
 
-		err = task.Save(req.Context(), a.Redis, *t)
+		err = taskservice.Save(req.Context(), tcr, tdbr, *t)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
 			return

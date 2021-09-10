@@ -1,6 +1,7 @@
 package app
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -12,8 +13,8 @@ import (
 
 type app struct {
 	router *chi.Mux
-	// TODO DB
-	Redis redis.Client
+	DB     sql.DB
+	Redis  redis.Client
 }
 
 type AppError struct {

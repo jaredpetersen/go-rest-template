@@ -1,17 +1,29 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
 	"time"
 
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jaredpetersen/go-rest-template/internal/app"
 	"github.com/jaredpetersen/go-rest-template/internal/redis"
 	"github.com/rs/zerolog/log"
 )
 
 func main() {
+	// TODO app config (maybe via kelseyhightower/envconfig)
+
 	a := app.New()
+
+	// Setup SQL Database
+	db, err := sql.Open("pgx", "postgres://go-api:password@localhost:26257/project-management")
+	if err != nil {
+		log.Fatal().Err(err).Msg("Failed to connect to database")
+	}
+	defer db.Close()
+	a.DB = *db
 
 	// Setup Redis
 	rCfg := redis.Config{URI: "redis://localhost:6379"}
@@ -19,6 +31,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Err(err).Msg("Failed to connect to Redis")
 	}
+	defer rdb.Close()
 	a.Redis = rdb
 
 	addr := 8080

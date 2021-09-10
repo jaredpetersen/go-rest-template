@@ -13,6 +13,7 @@ build:
 	$(GO_BUILD) -o $(BINARY_NAME)
 generate:
 	$(MOCKGEN_CMD) --dir internal/redis --output internal/redis/mocks --all
+	$(MOCKGEN_CMD) --dir internal/task --output internal/task/mocks --all
 test: generate
 	$(GO_TEST) -coverprofile cover.out ./...
 	$(GO_COVER) -html=cover.out -o cover.html

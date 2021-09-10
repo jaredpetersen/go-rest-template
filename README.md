@@ -8,7 +8,7 @@ Go REST Template is a starting point for writing REST APIs in Go. This minimal e
 
 ## Application Structure
 This structure of this application is inspired by [Mat Ryer's](https://github.com/matryer) GopherCon 2019 presentation,
-["How I Write HTTP Web Services After 8 Years"](https://www.youtube.com/watch?v=8TLiGHJTlig&ab_channel=GopherConEurope).
+["How I Write HTTP Web Services After 8 Years"](https://www.youtube.com/watch?v=rWBSMsLG8po).
 
 TODO more explanation about what's going on here and why
 

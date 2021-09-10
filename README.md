@@ -1,4 +1,6 @@
 # Go REST Template
+⚠️ This is a work in progress and is by no means ready for consumption
+
 Go REST Template is a starting point for writing REST APIs in Go. This minimal example shows how to set up an API complete with:
 - SQL database and Redis for storing and caching data
 - Health checks

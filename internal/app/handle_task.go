@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
-	"github.com/jaredpetersen/go-rest-template/internal/taskservice"
+	"github.com/jaredpetersen/go-rest-template/internal/tasksvc"
 )
 
 func (a *app) handleTaskGet() http.HandlerFunc {
@@ -23,7 +23,7 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 	return func(w http.ResponseWriter, req *http.Request) {
 		id := chi.URLParam(req, "id")
 
-		val, err := taskservice.Get(req.Context(), tcr, tdbr, id)
+		val, err := tasksvc.Get(req.Context(), tcr, tdbr, id)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
 			return
@@ -68,7 +68,7 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 		t.Description = val.Description
 		t.DateDue = val.DateDue
 
-		err = taskservice.Save(req.Context(), tcr, tdbr, *t)
+		err = tasksvc.Save(req.Context(), tcr, tdbr, *t)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
 			return

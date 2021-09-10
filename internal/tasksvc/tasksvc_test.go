@@ -1,4 +1,4 @@
-package taskservice
+package tasksvc
 
 import (
 	"context"

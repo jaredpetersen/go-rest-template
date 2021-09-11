@@ -87,6 +87,8 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 	defer db.Close()
 
 	err = initCockroachDB(ctx, *db)
+	require.NoError(t, err, "Failed to initialize CockroachDB")
+	defer truncateCockroachDB(ctx, *db)
 
 	tdbr := NewDBRepo(*db)
 
@@ -159,10 +161,10 @@ func TestIntegrationDBRepoGetNonexistent(t *testing.T) {
 	defer db.Close()
 
 	err = initCockroachDB(ctx, *db)
+	require.NoError(t, err, "Failed to initialize CockroachDB")
+	defer truncateCockroachDB(ctx, *db)
 
 	tdbr := NewDBRepo(*db)
-
-	defer truncateCockroachDB(ctx, *db)
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.NoError(t, err, "Get returned error")

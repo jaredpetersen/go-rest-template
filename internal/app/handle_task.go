@@ -17,8 +17,8 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 	}
 
 	// Set up dependencies specific to the handler here
-	tcr := task.NewCacheRepo(a.Redis)
-	tdbr := task.NewDBRepo(a.DB)
+	tcr := task.CacheRepo{Redis: a.Redis}
+	tdbr := task.DBRepo{DB: a.DB}
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		id := chi.URLParam(req, "id")
@@ -53,8 +53,8 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 	}
 
 	// Set up dependencies specific to the handler here
-	tcr := task.NewCacheRepo(a.Redis)
-	tdbr := task.NewDBRepo(a.DB)
+	tcr := task.CacheRepo{Redis: a.Redis}
+	tdbr := task.DBRepo{DB: a.DB}
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		val := new(request)

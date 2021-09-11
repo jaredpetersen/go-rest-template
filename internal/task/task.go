@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Task represents something that must be done
+// Task represents something that must be done.
 type Task struct {
 	Id          string     `json:"id"`
 	Description string     `json:"description"`
@@ -15,7 +15,8 @@ type Task struct {
 	DateUpdated time.Time  `json:"date_updated"`
 }
 
-// New creates a new task with default values
+// New creates a new task with default values. The returned pointer will never
+// be nil.
 func New() *Task {
 	now := time.Now()
 	return &Task{Id: uuid.New().String(), DateCreated: now, DateUpdated: now}

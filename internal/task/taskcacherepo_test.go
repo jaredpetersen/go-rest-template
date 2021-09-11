@@ -21,7 +21,7 @@ func TestCacheRepoSave(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Set", mock.Anything, "task."+tsk.Id, mock.MatchedBy(taskMatcher(*tsk)), time.Duration(0)).Return(nil)
 
-	tcr := NewCacheRepo(&rdb)
+	tcr := CacheRepo{Redis: &rdb}
 
 	err := tcr.Save(ctx, *tsk)
 	assert.NoError(t, err, "Returned error")
@@ -39,7 +39,7 @@ func TestCacheRepoSaveReturnsRedisError(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(expectedErr)
 
-	tcr := NewCacheRepo(&rdb)
+	tcr := CacheRepo{Redis: &rdb}
 
 	err := tcr.Save(ctx, *task)
 	assert.EqualError(t, err, expectedErr.Error(), "Did not return error")
@@ -55,7 +55,7 @@ func TestCacheRepoGet(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, "task."+id).Return(&storedTask, nil)
 
-	tcr := NewCacheRepo(&rdb)
+	tcr := CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.NoError(t, err, "Returned error")
@@ -72,7 +72,7 @@ func TestCacheRepoGetNotExists(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, "task."+id).Return(nil, nil)
 
-	tcr := NewCacheRepo(&rdb)
+	tcr := CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.NoError(t, err, "Returned error")
@@ -91,7 +91,7 @@ func TestCacheRepoGetReturnsRedisError(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, mock.Anything).Return(nil, expectedError)
 
-	tcr := NewCacheRepo(&rdb)
+	tcr := CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.Nil(t, tsk, "Task should be nil")

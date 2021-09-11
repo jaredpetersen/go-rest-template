@@ -13,16 +13,12 @@ type CacheClient interface {
 }
 
 type CacheRepo struct {
-	rdb redis.Client
+	Redis redis.Client
 }
 
-func NewCacheRepo(rdb redis.Client) *CacheRepo {
-	return &CacheRepo{rdb: rdb}
-}
-
-func (cr *CacheRepo) Get(ctx context.Context, id string) (*Task, error) {
+func (cr CacheRepo) Get(ctx context.Context, id string) (*Task, error) {
 	key := getRedisKey(id)
-	val, err := cr.rdb.Get(ctx, key)
+	val, err := cr.Redis.Get(ctx, key)
 	if err != nil {
 		return nil, err
 	}
@@ -36,14 +32,14 @@ func (cr *CacheRepo) Get(ctx context.Context, id string) (*Task, error) {
 	return &t, err
 }
 
-func (cr *CacheRepo) Save(ctx context.Context, t Task) error {
+func (cr CacheRepo) Save(ctx context.Context, t Task) error {
 	key := getRedisKey(t.Id)
 	value, err := json.Marshal(t)
 	if err != nil {
 		return err
 	}
 
-	return cr.rdb.Set(ctx, key, value, 0)
+	return cr.Redis.Set(ctx, key, value, 0)
 }
 
 func getRedisKey(id string) string {

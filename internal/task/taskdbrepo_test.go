@@ -90,7 +90,7 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 	require.NoError(t, err, "Failed to initialize CockroachDB")
 	defer truncateCockroachDB(ctx, *db)
 
-	tdbr := NewDBRepo(*db)
+	tdbr := DBRepo{DB: *db}
 
 	now := time.Now()
 
@@ -139,7 +139,7 @@ func TestIntegrationDBRepoSaveDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := NewDBRepo(*db)
+	tdbr := DBRepo{DB: *db}
 
 	err = tdbr.Save(ctx, *New())
 	require.Error(t, err, "Save did not return error")
@@ -164,7 +164,7 @@ func TestIntegrationDBRepoGetNonexistent(t *testing.T) {
 	require.NoError(t, err, "Failed to initialize CockroachDB")
 	defer truncateCockroachDB(ctx, *db)
 
-	tdbr := NewDBRepo(*db)
+	tdbr := DBRepo{DB: *db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.NoError(t, err, "Get returned error")
@@ -188,7 +188,7 @@ func TestIntegrationDBRepoGetDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := NewDBRepo(*db)
+	tdbr := DBRepo{DB: *db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.Error(t, err, "Get did not return error")

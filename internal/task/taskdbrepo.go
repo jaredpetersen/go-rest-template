@@ -5,18 +5,13 @@ import (
 	"database/sql"
 )
 
-// Add more docs
-// Integrate open API with codegen and only let it go as far as the handlers
-// put open api in an api directory at the top level so that services can import your api
-// via go get -- may require that we start checking in mocks
-
 // DBClient is a client for retrieving and manipulating tasks in a SQL database
 type DBClient interface {
 	Get(ctx context.Context, id string) (*Task, error)
 	Save(ctx context.Context, t Task) error
 }
 
-// DBRepo is a repository for tasks.
+// DBRepo is a database repository for tasks.
 type DBRepo struct {
 	DB sql.DB
 }

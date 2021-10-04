@@ -1,20 +1,25 @@
 package app
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"github.com/rs/zerolog/log"
-
-	"github.com/jaredpetersen/go-rest-template/internal/redis"
 )
 
+// Define interfaces where they are used
+
+type TaskManager interface {
+	Get(ctx context.Context, id string) (*task.Task, error)
+	Save(ctx context.Context, t task.Task) error
+}
+
 type app struct {
-	router *chi.Mux
-	DB     sql.DB
-	Redis  redis.Client
+	router      *chi.Mux
+	TaskManager TaskManager
 }
 
 type AppError struct {

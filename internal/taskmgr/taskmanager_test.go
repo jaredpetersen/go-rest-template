@@ -1,4 +1,4 @@
-package tasksvc
+package taskmgr
 
 import (
 	"context"
@@ -21,7 +21,9 @@ func TestGetReturnsCachedTask(t *testing.T) {
 
 	tdbr := taskmock.DBClient{}
 
-	retrievedTask, err := Get(ctx, &tcr, &tdbr, storedTask.Id)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -40,7 +42,9 @@ func TestGetReturnsStoredTaskOnCacheMiss(t *testing.T) {
 	tdbr := taskmock.DBClient{}
 	tdbr.On("Get", mock.Anything, storedTask.Id).Return(&storedTask, nil)
 
-	retrievedTask, err := Get(ctx, &tcr, &tdbr, storedTask.Id)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -59,7 +63,9 @@ func TestGetReturnsStoredTaskOnCacheError(t *testing.T) {
 	tdbr := taskmock.DBClient{}
 	tdbr.On("Get", mock.Anything, storedTask.Id).Return(&storedTask, nil)
 
-	retrievedTask, err := Get(ctx, &tcr, &tdbr, storedTask.Id)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -79,7 +85,9 @@ func TestGetReturnsErrorOnDBError(t *testing.T) {
 	tdbr := taskmock.DBClient{}
 	tdbr.On("Get", mock.Anything, storedTask.Id).Return(nil, dbErr)
 
-	retrievedTask, err := Get(ctx, &tcr, &tdbr, storedTask.Id)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
 	assert.ErrorIs(t, dbErr, err, "Incorrect error")
 	assert.Nil(t, retrievedTask, "Task must be nil")
 
@@ -95,13 +103,15 @@ func TestSave(t *testing.T) {
 	tcr := taskmock.CacheClient{}
 	tcr.On("Save", mock.Anything, tsk).Return(nil)
 
-	tdb := taskmock.DBClient{}
-	tdb.On("Save", mock.Anything, tsk).Return(nil)
+	tdbr := taskmock.DBClient{}
+	tdbr.On("Save", mock.Anything, tsk).Return(nil)
 
-	err := Save(ctx, &tcr, &tdb, tsk)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	err := mgr.Save(ctx, tsk)
 	assert.NoError(t, err, "Returned error")
 
-	tdb.AssertExpectations(t)
+	tdbr.AssertExpectations(t)
 	tcr.AssertExpectations(t)
 }
 
@@ -113,13 +123,15 @@ func TestSaveOnCacheError(t *testing.T) {
 	tcr := taskmock.CacheClient{}
 	tcr.On("Save", mock.Anything, tsk).Return(errors.New("Failed"))
 
-	tdb := taskmock.DBClient{}
-	tdb.On("Save", mock.Anything, tsk).Return(nil)
+	tdbr := taskmock.DBClient{}
+	tdbr.On("Save", mock.Anything, tsk).Return(nil)
 
-	err := Save(ctx, &tcr, &tdb, tsk)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	err := mgr.Save(ctx, tsk)
 	assert.NoError(t, err, "Returned error")
 
-	tdb.AssertExpectations(t)
+	tdbr.AssertExpectations(t)
 	tcr.AssertExpectations(t)
 }
 
@@ -132,12 +144,14 @@ func TestSaveReturnsErrorOnDBError(t *testing.T) {
 	tcr := taskmock.CacheClient{}
 	tcr.On("Save", mock.Anything, tsk).Return(nil)
 
-	tdb := taskmock.DBClient{}
-	tdb.On("Save", mock.Anything, tsk).Return(dbErr)
+	tdbr := taskmock.DBClient{}
+	tdbr.On("Save", mock.Anything, tsk).Return(dbErr)
 
-	err := Save(ctx, &tcr, &tdb, tsk)
+	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
+
+	err := mgr.Save(ctx, tsk)
 	assert.ErrorIs(t, dbErr, err, "Incorrect error")
 
-	tdb.AssertExpectations(t)
+	tdbr.AssertExpectations(t)
 	tcr.AssertExpectations(t)
 }

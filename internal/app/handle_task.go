@@ -6,7 +6,6 @@ import (
 
 	"github.com/go-chi/chi"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
-	"github.com/jaredpetersen/go-rest-template/internal/tasksvc"
 )
 
 func (a *app) handleTaskGet() http.HandlerFunc {
@@ -16,16 +15,14 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 		DateDue     *time.Time `json:"date_due,string"`
 	}
 
-	// Set up dependencies specific to the handler here
-	tcr := task.CacheRepo{Redis: a.Redis}
-	tdbr := task.DBRepo{DB: a.DB}
+	// Set up any dependencies specific to the handler here
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		id := chi.URLParam(req, "id")
 
-		val, err := tasksvc.Get(req.Context(), tcr, tdbr, id)
+		val, err := a.TaskManager.Get(req.Context(), id)
 		if err != nil {
-			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
+			respondError(w, AppError{Internal: err}, http.StatusInternalServerError)
 			return
 		}
 
@@ -53,8 +50,6 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 	}
 
 	// Set up dependencies specific to the handler here
-	tcr := task.CacheRepo{Redis: a.Redis}
-	tdbr := task.DBRepo{DB: a.DB}
 
 	return func(w http.ResponseWriter, req *http.Request) {
 		val := new(request)
@@ -68,9 +63,9 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 		t.Description = val.Description
 		t.DateDue = val.DateDue
 
-		err = tasksvc.Save(req.Context(), tcr, tdbr, *t)
+		err = a.TaskManager.Save(req.Context(), *t)
 		if err != nil {
-			respondError(w, AppError{Internal: err}, http.StatusUnprocessableEntity)
+			respondError(w, AppError{Internal: err}, http.StatusInternalServerError)
 			return
 		}
 

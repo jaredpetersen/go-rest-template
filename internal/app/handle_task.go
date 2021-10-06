@@ -1,6 +1,7 @@
 package app
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -56,6 +57,12 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 		err := receive(req, val)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusBadRequest)
+			return
+		}
+
+		// Validate request body manually
+		if val.Description == "" {
+			respondError(w, AppError{External: errors.New("Field 'description' is required")}, http.StatusUnprocessableEntity)
 			return
 		}
 

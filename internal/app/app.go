@@ -23,7 +23,7 @@ type app struct {
 }
 
 type AppError struct {
-	Public   error
+	External error
 	Internal error
 }
 
@@ -58,12 +58,12 @@ func respondError(w http.ResponseWriter, appErr AppError, statusCode int) {
 		Message string `json:"message"`
 	}
 
-	log.Error().AnErr("public", appErr.Public).AnErr("internal", appErr.Internal).Send()
+	log.Error().AnErr("external", appErr.External).AnErr("internal", appErr.Internal).Send()
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
-	if appErr.Public != nil {
-		json.NewEncoder(w).Encode(&response{Message: appErr.Public.Error()})
+	if appErr.External != nil {
+		json.NewEncoder(w).Encode(&response{Message: appErr.External.Error()})
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/google/uuid"
@@ -30,7 +31,7 @@ func TestHandleTaskGet(t *testing.T) {
 	a.TaskManager = &tskMgr
 
 	// Make request
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/task/%s", tsk.Id), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/tasks/%s", tsk.Id), nil)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)
@@ -51,7 +52,7 @@ func TestHandleTaskGetError(t *testing.T) {
 	a.TaskManager = &tskMgr
 
 	// Make request
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/task/%s", uuid.New()), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/tasks/%s", uuid.New()), nil)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)
@@ -70,7 +71,7 @@ func TestHandleTaskGetNotFound(t *testing.T) {
 	a.TaskManager = &tskMgr
 
 	// Make request
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/task/%s", uuid.New().String()), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/tasks/%s", uuid.New().String()), nil)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)
@@ -98,7 +99,7 @@ func TestHandleTaskSave(t *testing.T) {
 	err := json.NewEncoder(&buf).Encode(tsk)
 
 	// Make request
-	req, err := http.NewRequest(http.MethodPost, "/task", &buf)
+	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)
@@ -114,6 +115,56 @@ func TestHandleTaskSave(t *testing.T) {
 
 	_, err = uuid.Parse(resBody.ID)
 	require.NoError(t, err, "Returned an invalid UUID")
+}
+
+func TestHandleTaskSaveBadBody(t *testing.T) {
+	// Set up relevant server dependencies
+	tskMgr := mocks.TaskManager{}
+	tskMgr.On("Save", mock.Anything, mock.Anything).Return(nil)
+
+	// Set up server
+	a := New()
+	a.TaskManager = &tskMgr
+
+	// Set up request body without valid JSON
+	reqBody := strings.NewReader("<task />")
+
+	// Make request
+	req, err := http.NewRequest(http.MethodPost, "/tasks", reqBody)
+	require.NoError(t, err)
+	res := httptest.NewRecorder()
+	a.ServeHTTP(res, req)
+
+	assert.Equal(t, http.StatusBadRequest, res.Result().StatusCode)
+	assert.Empty(t, res.Body)
+}
+
+func TestHandleTaskSaveMissingBodyFields(t *testing.T) {
+	// Set up relevant server dependencies
+	tskMgr := mocks.TaskManager{}
+	tskMgr.On("Save", mock.Anything, mock.Anything).Return(nil)
+
+	// Set up server
+	a := New()
+	a.TaskManager = &tskMgr
+
+	// Set up invalid request body
+	tsk := struct {
+		FavoriteColor string `json:"favorite_color"`
+	}{
+		FavoriteColor: "Seafoam Green",
+	}
+	var buf bytes.Buffer
+	err := json.NewEncoder(&buf).Encode(tsk)
+
+	// Make request
+	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)
+	require.NoError(t, err)
+	res := httptest.NewRecorder()
+	a.ServeHTTP(res, req)
+
+	assert.Equal(t, http.StatusUnprocessableEntity, res.Result().StatusCode)
+	assert.JSONEq(t, "{\"message\": \"Field 'description' is required\"}", res.Body.String())
 }
 
 func TestHandleTaskSaveError(t *testing.T) {
@@ -135,7 +186,7 @@ func TestHandleTaskSaveError(t *testing.T) {
 	err := json.NewEncoder(&buf).Encode(tsk)
 
 	// Make request
-	req, err := http.NewRequest(http.MethodPost, "/task", &buf)
+	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)

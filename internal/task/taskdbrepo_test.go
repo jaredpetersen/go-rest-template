@@ -118,12 +118,19 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 		savedTsk, err := tdbr.Get(ctx, tt.ID)
 		require.NoError(t, err, "Get returned error")
 		require.NotNil(t, savedTsk, "Get did not return a task")
+		assert.Equal(t, tt.ID, savedTsk.ID)
+		assert.Equal(t, tt.Description, savedTsk.Description)
+
+		// Evaluate time using microseconds since that's as precise as CockroachDB goes
 
 		if tt.DateDue != nil {
 			assert.Equal(t, tt.DateDue.Round(time.Microsecond), *savedTsk.DateDue)
 		} else {
 			assert.Nil(t, savedTsk.DateDue)
 		}
+
+		assert.Equal(t, tt.DateCreated.Round(time.Microsecond), savedTsk.DateCreated)
+		assert.Equal(t, tt.DateUpdated.Round(time.Microsecond), savedTsk.DateUpdated)
 	}
 }
 

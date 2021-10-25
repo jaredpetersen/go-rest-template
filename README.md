@@ -1,4 +1,6 @@
 # Go REST Template
+[![Build](https://github.com/jaredpetersen/go-rest-template/actions/workflows/build.yaml/badge.svg)](https://github.com/jaredpetersen/go-rest-template/actions/workflows/build.yaml)
+
 ⚠️ This is a work in progress and is by no means ready for consumption
 
 Go REST Template is a starting point for writing REST APIs in Go. This minimal example shows how to set up an API complete with:

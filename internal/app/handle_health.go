@@ -25,11 +25,11 @@ func (a *app) handleReadiness() http.HandlerFunc {
 			State: transformState(monitorStatus.State),
 			Components: api.HealthComponents{
 				Redis: api.HealthComponent{
-					State: transformState(redisStatus.Status.State),
+					State:     transformState(redisStatus.Status.State),
 					Timestamp: redisStatus.Timestamp,
 				},
 				CockroachDb: api.HealthComponent{
-					State: transformState(dbStatus.Status.State),
+					State:     transformState(dbStatus.Status.State),
 					Timestamp: redisStatus.Timestamp,
 				},
 			},

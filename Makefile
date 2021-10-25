@@ -2,6 +2,7 @@
 BINARY_NAME=go-rest-template
 GO_CMD=go
 GOFMT_CMD=gofmt
+OAPIGEN_CMD=oapi-codegen
 MOCKGEN_CMD=mockery
 STATICCHECK_CMD=staticcheck
 
@@ -13,7 +14,9 @@ install:
 build:
 	$(GO_CMD) build -o $(BINARY_NAME)
 generate:
-	oapi-codegen --generate 'types' --package 'api' api/openapi.yaml > api/openapi.go
+	# Generate code from OpenAPI schema
+	$(OAPIGEN_CMD) --generate 'types' --package 'api' api/openapi.yaml | $(GOFMT_CMD) > api/openapi.go
+	# Generate testing mocks
 	$(MOCKGEN_CMD) --dir internal/app --output internal/app/mocks --all
 	$(MOCKGEN_CMD) --dir internal/redis --output internal/redis/mocks --all
 	$(MOCKGEN_CMD) --dir internal/task --output internal/task/mocks --all

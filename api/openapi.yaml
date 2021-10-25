@@ -1,0 +1,222 @@
+openapi: 3.0.3
+info:
+  version: 1.0.0
+  title: Task Management Service
+  description: A simple task management API used as a template for building REST APIs in GO
+  license:
+    name: MIT
+    url: https://github.com/jaredpetersen/go-rest-template/blob/main/LICENSE.md
+paths:
+  /liveness:
+    get:
+      description: Returns liveness state of the API
+      operationId: getLiveness
+      tags:
+      - health
+      responses:
+        '200':
+          description: API is available
+        '503':
+          description: API is unavailable
+  /readiness:
+    get:
+      description: Returns readiness state of the API
+      operationId: getReadiness
+      tags:
+      - health
+      responses:
+        '200':
+          description: API is available
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              examples:
+                UP:
+                  value:
+                    state: UP
+                    components:
+                      cockroachDb:
+                        state: UP
+                        timestamp: "1970-01-01T00:00:00.000Z"
+                      redis:
+                        state: UP
+                        timestamp: "1970-01-01T00:00:00.000Z"
+                WARN:
+                  value:
+                    state: WARN
+                    components:
+                      cockroachDb:
+                        state: UP
+                        timestamp: "1970-01-01T00:00:00.000Z"
+                      redis:
+                        state: WARN
+                        timestamp: "1970-01-01T00:00:00.000Z"
+        '503':
+          description: API is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+              example:
+                state: DOWN
+                components:
+                  cockroachDb:
+                    state: DOWN
+                    timestamp: "1970-01-01T00:00:00.000Z"
+                  redis:
+                    state: UP
+                    timestamp: "1970-01-01T00:00:00.000Z"
+  /tasks:
+    post:
+      description: Creates a new task
+      operationId: newTask
+      tags:
+      - tasks
+      requestBody:
+        description: Task to create
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewTask'
+      responses:
+        '200':
+          description: Task identifier response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Identifier'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '422':
+          $ref: '#/components/responses/UnprocessableEntity'
+        default:
+          $ref: '#/components/responses/Error'
+  /tasks/{id}:
+    get:
+      description: Returns a task by ID
+      operationId: getTaskByID
+      tags:
+      - tasks
+      parameters:
+        - name: id
+          in: path
+          description: ID of the task
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Task response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        default:
+          $ref: '#/components/responses/Error'
+components:
+  responses:
+    BadRequest:
+      description: Request cannot be understood and is invalid
+    UnprocessableEntity:
+      description: Request is understood but is invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The specified resource was not found
+    Error:
+      description: Encountered error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Task:
+      type: object
+      required:
+      - id
+      - description
+      properties:
+        id:
+          type: string
+          format: uuid
+        description:
+          type: string
+        dateDue:
+          type: string
+          nullable: true
+          format: date-time
+    NewTask:
+      type: object
+      required:
+        - description
+      properties:
+        description:
+          type: string
+        dateDue:
+          type: string
+          nullable: true
+          format: date-time
+    Identifier:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: uuid
+    HealthState:
+      type: string
+      enum:
+      - DOWN
+      - WARN
+      - UP
+    HealthComponent:
+      type: object
+      required:
+        - state
+        - timestamp
+      properties:
+        state:
+          $ref: '#/components/schemas/HealthState'
+        timestamp:
+          type: string
+          format: date-time
+        details:
+          type: object
+          additionalProperties: true
+    HealthComponents:
+      type: object
+      required:
+      - redis
+      - cockroachDb
+      properties:
+        redis:
+          $ref: '#/components/schemas/HealthComponent'
+        cockroachDb:
+          $ref: '#/components/schemas/HealthComponent'
+    Health:
+      type: object
+      required:
+        - state
+        - components
+      properties:
+        state:
+          $ref: '#/components/schemas/HealthState'
+        components:
+          $ref: '#/components/schemas/HealthComponents'
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string

@@ -115,7 +115,7 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 		err = tdbr.Save(ctx, *tt)
 		require.NoError(t, err, "Save returned error")
 
-		savedTsk, err := tdbr.Get(ctx, tt.Id)
+		savedTsk, err := tdbr.Get(ctx, tt.ID)
 		require.NoError(t, err, "Get returned error")
 		require.NotNil(t, savedTsk, "Get did not return a task")
 		assert.True(t, cmp.Equal(*tt, *savedTsk), "Saved task is not the same:\n"+cmp.Diff(*tt, *savedTsk))

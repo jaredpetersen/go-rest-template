@@ -1,5 +1,7 @@
 go-rest-template
 mocks/
+api/openapi.go
 cover.out
 cover.html
 .DS_Store
+.idea

@@ -8,8 +8,9 @@ import (
 	"github.com/go-redis/redis/v8"
 )
 
-// RedisClient interacts with Redis.
+// Client interacts with Redis.
 type Client interface {
+	Ping(ctx context.Context) error
 	Get(ctx context.Context, key string) (*string, error)
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) error
 	TTL(ctx context.Context, key string) (time.Duration, error)
@@ -24,6 +25,11 @@ type Config struct {
 // Redis is a standalone client for Redis.
 type Redis struct {
 	c *redis.Client
+}
+
+// Ping checks Redis.
+func (r *Redis) Ping(ctx context.Context) error {
+	return r.c.Ping(ctx).Err()
 }
 
 // Get retrieves a key.

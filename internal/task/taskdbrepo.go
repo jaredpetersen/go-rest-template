@@ -24,7 +24,7 @@ func (dbr DBRepo) Get(ctx context.Context, id string) (*Task, error) {
 		where id = $1`
 	row := dbr.DB.QueryRowContext(ctx, query, id)
 
-	tsk := Task{Id: id}
+	tsk := Task{ID: id}
 	err := row.Scan(&tsk.Description, &tsk.DateDue, &tsk.DateCreated, &tsk.DateUpdated)
 	if err == sql.ErrNoRows {
 		return nil, nil
@@ -42,7 +42,7 @@ func (dbr DBRepo) Save(ctx context.Context, t Task) error {
 		values ($1, $2, $3, $4, $5)`
 	_, err := dbr.DB.ExecContext(ctx,
 		query,
-		t.Id,
+		t.ID,
 		t.Description,
 		t.DateDue,
 		t.DateCreated,

@@ -19,7 +19,7 @@ func TestCacheRepoSave(t *testing.T) {
 	tsk := New()
 
 	rdb := redismock.Client{}
-	rdb.On("Set", mock.Anything, "task."+tsk.Id, mock.MatchedBy(taskMatcher(*tsk)), time.Duration(0)).Return(nil)
+	rdb.On("Set", mock.Anything, "task."+tsk.ID, mock.MatchedBy(taskMatcher(*tsk)), time.Duration(0)).Return(nil)
 
 	tcr := CacheRepo{Redis: &rdb}
 

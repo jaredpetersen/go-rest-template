@@ -38,7 +38,7 @@ func (cr CacheRepo) Get(ctx context.Context, id string) (*Task, error) {
 
 // Save stores a task in the cache.
 func (cr CacheRepo) Save(ctx context.Context, t Task) error {
-	key := getRedisKey(t.Id)
+	key := getRedisKey(t.ID)
 	value, err := json.Marshal(t)
 	if err != nil {
 		return err

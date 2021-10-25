@@ -88,6 +88,25 @@ func TestNewReturnsConfigError(t *testing.T) {
 	}
 }
 
+func TestIntegrationPing(t *testing.T) {
+	if testing.Short() {
+		t.Skip("skipping integration test")
+	}
+
+	ctx := context.Background()
+	redisContainer, err := setupRedis(ctx)
+	require.NoError(t, err, "Failed to start up Redis container")
+	defer redisContainer.Terminate(ctx)
+
+	config := Config{URI: redisContainer.URI}
+	rdb, err := New(config)
+	require.NoError(t, err, "Client instantiation error")
+	defer rdb.Close()
+
+	err = rdb.Ping(ctx)
+	assert.NoError(t, err, "Ping error")
+}
+
 func TestIntegrationGetNoKey(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test")

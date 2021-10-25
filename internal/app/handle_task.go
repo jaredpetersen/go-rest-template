@@ -3,19 +3,13 @@ package app
 import (
 	"errors"
 	"net/http"
-	"time"
 
 	"github.com/go-chi/chi"
+	"github.com/jaredpetersen/go-rest-template/api"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
 )
 
 func (a *app) handleTaskGet() http.HandlerFunc {
-	type response struct {
-		Id          string     `json:"id"`
-		Description string     `json:"description"`
-		DateDue     *time.Time `json:"date_due,string"`
-	}
-
 	// Set up any dependencies specific to the handler here
 
 	return func(w http.ResponseWriter, req *http.Request) {
@@ -32,8 +26,8 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 			return
 		}
 
-		res := &response{
-			Id:          val.Id,
+		res := api.Task{
+			Id:          val.ID,
 			Description: val.Description,
 			DateDue:     val.DateDue,
 		}
@@ -42,18 +36,10 @@ func (a *app) handleTaskGet() http.HandlerFunc {
 }
 
 func (a *app) handleTaskSave() http.HandlerFunc {
-	type request struct {
-		Description string     `json:"description"`
-		DateDue     *time.Time `json:"date_due,string"`
-	}
-	type response struct {
-		Id string `json:"id"`
-	}
-
 	// Set up dependencies specific to the handler here
 
 	return func(w http.ResponseWriter, req *http.Request) {
-		val := new(request)
+		val := new(api.NewTask)
 		err := receive(req, val)
 		if err != nil {
 			respondError(w, AppError{Internal: err}, http.StatusBadRequest)
@@ -76,6 +62,6 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 			return
 		}
 
-		respond(w, &response{t.Id}, http.StatusCreated)
+		respond(w, api.Identifier{Id: t.ID}, http.StatusCreated)
 	}
 }

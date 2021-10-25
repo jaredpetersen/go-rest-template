@@ -21,22 +21,23 @@ import (
 
 func TestHandleTaskGet(t *testing.T) {
 	tsk := task.New()
+	tsk.Description = "Buy butter"
 
 	// Set up relevant server dependencies
 	tskMgr := mocks.TaskManager{}
-	tskMgr.On("Get", mock.Anything, tsk.Id).Return(tsk, nil)
+	tskMgr.On("Get", mock.Anything, tsk.ID).Return(tsk, nil)
 
 	// Set up server
 	a := New()
 	a.TaskManager = &tskMgr
 
 	// Make request
-	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/tasks/%s", tsk.Id), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("/tasks/%s", tsk.ID), nil)
 	require.NoError(t, err)
 	res := httptest.NewRecorder()
 	a.ServeHTTP(res, req)
 
-	expectedJSON := fmt.Sprintf("{\"id\": \"%s\", \"description\": \"%s\", \"date_due\": null}", tsk.Id, tsk.Description)
+	expectedJSON := fmt.Sprintf("{\"id\": \"%s\", \"description\": \"%s\", \"dateDue\": null}", tsk.ID, tsk.Description)
 
 	assert.Equal(t, http.StatusOK, res.Result().StatusCode)
 	assert.JSONEq(t, expectedJSON, res.Body.String())
@@ -150,7 +151,7 @@ func TestHandleTaskSaveMissingBodyFields(t *testing.T) {
 
 	// Set up invalid request body
 	tsk := struct {
-		FavoriteColor string `json:"favorite_color"`
+		FavoriteColor string `json:"favoriteColor"`
 	}{
 		FavoriteColor: "Seafoam Green",
 	}

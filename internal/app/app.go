@@ -3,9 +3,11 @@ package app
 import (
 	"context"
 	"encoding/json"
+	"github.com/jaredpetersen/go-health/health"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/jaredpetersen/go-rest-template/api"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"github.com/rs/zerolog/log"
 )
@@ -18,8 +20,9 @@ type TaskManager interface {
 }
 
 type app struct {
-	router      *chi.Mux
-	TaskManager TaskManager
+	router        *chi.Mux
+	HealthMonitor *health.Monitor
+	TaskManager   TaskManager
 }
 
 type AppError struct {
@@ -54,16 +57,12 @@ func respond(w http.ResponseWriter, data interface{}, statusCode int) {
 }
 
 func respondError(w http.ResponseWriter, appErr AppError, statusCode int) {
-	type response struct {
-		Message string `json:"message"`
-	}
-
 	log.Error().AnErr("external", appErr.External).AnErr("internal", appErr.Internal).Send()
 
 	w.Header().Add("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 
 	if appErr.External != nil {
-		json.NewEncoder(w).Encode(&response{Message: appErr.External.Error()})
+		json.NewEncoder(w).Encode(&api.Error{Message: appErr.External.Error()})
 	}
 }

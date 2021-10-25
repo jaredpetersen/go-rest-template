@@ -29,10 +29,11 @@ func (a *app) routes() {
 	a.router.Use(hlog.UserAgentHandler("user_agent"))
 	a.router.Use(hlog.RefererHandler("referer"))
 
+	a.router.Get("/liveness", a.handleLiveness())
+	a.router.Get("/readiness", a.handleReadiness())
+
 	a.router.Get("/tasks/{id}", a.handleTaskGet())
 	a.router.Post("/tasks", a.handleTaskSave())
-
-	a.router.Get("/health", a.handleHealth())
 
 	a.router.NotFound(a.handleNotFound())
 	a.router.MethodNotAllowed(a.handleMethodNotAllowed())

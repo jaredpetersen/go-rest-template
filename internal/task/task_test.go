@@ -29,7 +29,7 @@ func isValidUUID(id string) bool {
 func TestNew(t *testing.T) {
 	tsk := New()
 
-	assert.True(t, isValidUUID(tsk.Id), "Did not generate valid ID")
+	assert.True(t, isValidUUID(tsk.ID), "Did not generate valid ID")
 
 	assert.Nil(t, tsk.DateDue, "Initialized DateDue")
 
@@ -39,6 +39,6 @@ func TestNew(t *testing.T) {
 
 	assert.Equal(t, tsk.DateCreated, tsk.DateUpdated, "DateCreated and DateUpdated are not equal")
 
-	expectedTask := Task{Id: tsk.Id, DateCreated: tsk.DateCreated, DateUpdated: tsk.DateUpdated}
+	expectedTask := Task{ID: tsk.ID, DateCreated: tsk.DateCreated, DateUpdated: tsk.DateUpdated}
 	assert.Equal(t, expectedTask, *tsk, "Task is setting more defaults than expected")
 }

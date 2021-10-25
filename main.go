@@ -1,12 +1,15 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jaredpetersen/go-rest-template/internal/healthcheck"
 	"net/http"
 	"time"
 
 	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jaredpetersen/go-health/health"
 	"github.com/jaredpetersen/go-rest-template/internal/app"
 	"github.com/jaredpetersen/go-rest-template/internal/redis"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
@@ -15,6 +18,7 @@ import (
 )
 
 func main() {
+	ctx := context.Background()
 	// TODO app config (maybe via kelseyhightower/envconfig)
 
 	a := app.New()
@@ -33,6 +37,24 @@ func main() {
 		log.Fatal().Err(err).Msg("Failed to connect to Redis")
 	}
 	defer rdb.Close()
+
+	// Set up health
+	healthCheckTTL := time.Second * 2
+	healthCheckTimeout := time.Second * 2
+
+	dbHealthCheckFunc := healthcheck.BuildDBHealthCheckFunc(db)
+	dbHealthCheck := health.NewCheck("database", dbHealthCheckFunc)
+	dbHealthCheck.TTL = healthCheckTTL
+	dbHealthCheck.Timeout = healthCheckTimeout
+
+	redisHealthCheckFunc := healthcheck.BuildRedisHealthCheckFunc(rdb)
+	redisHealthCheck := health.NewCheck("redis", redisHealthCheckFunc)
+	redisHealthCheck.TTL = healthCheckTTL
+	redisHealthCheck.Timeout = healthCheckTimeout
+
+	healthMonitor := health.New()
+	healthMonitor.Monitor(ctx, redisHealthCheck, dbHealthCheck)
+	a.HealthMonitor = healthMonitor
 
 	// Set up task manager
 	taskCacheClient := task.CacheRepo{Redis: rdb}

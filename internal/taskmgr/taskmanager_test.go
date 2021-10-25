@@ -14,16 +14,16 @@ import (
 func TestGetReturnsCachedTask(t *testing.T) {
 	ctx := context.Background()
 
-	storedTask := task.Task{Id: "someid"}
+	storedTask := task.Task{ID: "someid"}
 
 	tcr := taskmock.CacheClient{}
-	tcr.On("Get", mock.Anything, storedTask.Id).Return(&storedTask, nil)
+	tcr.On("Get", mock.Anything, storedTask.ID).Return(&storedTask, nil)
 
 	tdbr := taskmock.DBClient{}
 
 	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
 
-	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
+	retrievedTask, err := mgr.Get(ctx, storedTask.ID)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -34,17 +34,17 @@ func TestGetReturnsCachedTask(t *testing.T) {
 func TestGetReturnsStoredTaskOnCacheMiss(t *testing.T) {
 	ctx := context.Background()
 
-	storedTask := task.Task{Id: "someid"}
+	storedTask := task.Task{ID: "someid"}
 
 	tcr := taskmock.CacheClient{}
-	tcr.On("Get", mock.Anything, storedTask.Id).Return(nil, nil)
+	tcr.On("Get", mock.Anything, storedTask.ID).Return(nil, nil)
 
 	tdbr := taskmock.DBClient{}
-	tdbr.On("Get", mock.Anything, storedTask.Id).Return(&storedTask, nil)
+	tdbr.On("Get", mock.Anything, storedTask.ID).Return(&storedTask, nil)
 
 	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
 
-	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
+	retrievedTask, err := mgr.Get(ctx, storedTask.ID)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -55,17 +55,17 @@ func TestGetReturnsStoredTaskOnCacheMiss(t *testing.T) {
 func TestGetReturnsStoredTaskOnCacheError(t *testing.T) {
 	ctx := context.Background()
 
-	storedTask := task.Task{Id: "someid"}
+	storedTask := task.Task{ID: "someid"}
 
 	tcr := taskmock.CacheClient{}
-	tcr.On("Get", mock.Anything, storedTask.Id).Return(nil, errors.New("Failed"))
+	tcr.On("Get", mock.Anything, storedTask.ID).Return(nil, errors.New("Failed"))
 
 	tdbr := taskmock.DBClient{}
-	tdbr.On("Get", mock.Anything, storedTask.Id).Return(&storedTask, nil)
+	tdbr.On("Get", mock.Anything, storedTask.ID).Return(&storedTask, nil)
 
 	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
 
-	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
+	retrievedTask, err := mgr.Get(ctx, storedTask.ID)
 	assert.NoError(t, err, "Returned error")
 	assert.Equal(t, &storedTask, retrievedTask, "Returned incorrect task")
 
@@ -76,18 +76,18 @@ func TestGetReturnsStoredTaskOnCacheError(t *testing.T) {
 func TestGetReturnsErrorOnDBError(t *testing.T) {
 	ctx := context.Background()
 
-	storedTask := task.Task{Id: "someid"}
+	storedTask := task.Task{ID: "someid"}
 	dbErr := errors.New("Fail")
 
 	tcr := taskmock.CacheClient{}
-	tcr.On("Get", mock.Anything, storedTask.Id).Return(nil, nil)
+	tcr.On("Get", mock.Anything, storedTask.ID).Return(nil, nil)
 
 	tdbr := taskmock.DBClient{}
-	tdbr.On("Get", mock.Anything, storedTask.Id).Return(nil, dbErr)
+	tdbr.On("Get", mock.Anything, storedTask.ID).Return(nil, dbErr)
 
 	mgr := Manager{TaskCacheClient: &tcr, TaskDBClient: &tdbr}
 
-	retrievedTask, err := mgr.Get(ctx, storedTask.Id)
+	retrievedTask, err := mgr.Get(ctx, storedTask.ID)
 	assert.ErrorIs(t, dbErr, err, "Incorrect error")
 	assert.Nil(t, retrievedTask, "Task must be nil")
 
@@ -98,7 +98,7 @@ func TestGetReturnsErrorOnDBError(t *testing.T) {
 func TestSave(t *testing.T) {
 	ctx := context.Background()
 
-	tsk := task.Task{Id: "someid"}
+	tsk := task.Task{ID: "someid"}
 
 	tcr := taskmock.CacheClient{}
 	tcr.On("Save", mock.Anything, tsk).Return(nil)
@@ -118,7 +118,7 @@ func TestSave(t *testing.T) {
 func TestSaveOnCacheError(t *testing.T) {
 	ctx := context.Background()
 
-	tsk := task.Task{Id: "someid"}
+	tsk := task.Task{ID: "someid"}
 
 	tcr := taskmock.CacheClient{}
 	tcr.On("Save", mock.Anything, tsk).Return(errors.New("Failed"))
@@ -138,7 +138,7 @@ func TestSaveOnCacheError(t *testing.T) {
 func TestSaveReturnsErrorOnDBError(t *testing.T) {
 	ctx := context.Background()
 
-	tsk := task.Task{Id: "someid"}
+	tsk := task.Task{ID: "someid"}
 	dbErr := errors.New("Failed")
 
 	tcr := taskmock.CacheClient{}

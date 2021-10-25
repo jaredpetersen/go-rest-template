@@ -8,15 +8,15 @@ import (
 
 // Task represents something that must be done.
 type Task struct {
-	Id          string     `json:"id"`
+	ID          string     `json:"id"`
 	Description string     `json:"description"`
-	DateDue     *time.Time `json:"date_due,string"`
-	DateCreated time.Time  `json:"date_created,string"`
-	DateUpdated time.Time  `json:"date_updated"`
+	DateDue     *time.Time `json:"dateDue,string"`
+	DateCreated time.Time  `json:"dateCreated,string"`
+	DateUpdated time.Time  `json:"dateUpdated"`
 }
 
 // New creates a new task with default values. The returned pointer will never be nil.
 func New() *Task {
 	now := time.Now()
-	return &Task{Id: uuid.New().String(), DateCreated: now, DateUpdated: now}
+	return &Task{ID: uuid.New().String(), DateCreated: now, DateUpdated: now}
 }

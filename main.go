@@ -58,7 +58,7 @@ func main() {
 
 	// Set up task manager
 	taskCacheClient := task.CacheRepo{Redis: rdb}
-	taskDBClient := task.DBRepo{DB: *db}
+	taskDBClient := task.DBRepo{DB: db}
 	a.TaskManager = taskmgr.Manager{TaskDBClient: taskDBClient, TaskCacheClient: taskCacheClient}
 
 	addr := 8080

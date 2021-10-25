@@ -13,7 +13,7 @@ type DBClient interface {
 
 // DBRepo is a database repository for tasks.
 type DBRepo struct {
-	DB sql.DB
+	DB *sql.DB
 }
 
 // Get retrieves a task from the database using the task's ID. If a task cannot be found with that ID, nil will be

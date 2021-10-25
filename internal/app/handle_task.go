@@ -48,7 +48,7 @@ func (a *app) handleTaskSave() http.HandlerFunc {
 
 		// Validate request body manually
 		if val.Description == "" {
-			respondError(w, AppError{External: errors.New("Field 'description' is required")}, http.StatusUnprocessableEntity)
+			respondError(w, AppError{External: errors.New("field 'description' is required")}, http.StatusUnprocessableEntity)
 			return
 		}
 

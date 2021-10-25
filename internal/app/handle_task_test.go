@@ -98,7 +98,7 @@ func TestHandleTaskSave(t *testing.T) {
 		Description: "Buy milk",
 	}
 	var buf bytes.Buffer
-	err := json.NewEncoder(&buf).Encode(tsk)
+	json.NewEncoder(&buf).Encode(tsk)
 
 	// Make request
 	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)
@@ -157,7 +157,7 @@ func TestHandleTaskSaveMissingBodyFields(t *testing.T) {
 		FavoriteColor: "Seafoam Green",
 	}
 	var buf bytes.Buffer
-	err := json.NewEncoder(&buf).Encode(tsk)
+	json.NewEncoder(&buf).Encode(tsk)
 
 	// Make request
 	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)
@@ -166,7 +166,7 @@ func TestHandleTaskSaveMissingBodyFields(t *testing.T) {
 	a.ServeHTTP(res, req)
 
 	assert.Equal(t, http.StatusUnprocessableEntity, res.Result().StatusCode)
-	assert.JSONEq(t, "{\"message\": \"Field 'description' is required\"}", res.Body.String())
+	assert.JSONEq(t, "{\"message\": \"field 'description' is required\"}", res.Body.String())
 }
 
 func TestHandleTaskSaveError(t *testing.T) {
@@ -185,7 +185,7 @@ func TestHandleTaskSaveError(t *testing.T) {
 		Description: "Buy milk",
 	}
 	var buf bytes.Buffer
-	err := json.NewEncoder(&buf).Encode(tsk)
+	json.NewEncoder(&buf).Encode(tsk)
 
 	// Make request
 	req, err := http.NewRequest(http.MethodPost, "/tasks", &buf)

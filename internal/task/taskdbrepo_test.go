@@ -53,7 +53,7 @@ func setupCockroachDB(ctx context.Context) (*cockroachDBContainer, error) {
 	return &cockroachDBContainer{Container: container, URI: uri}, nil
 }
 
-func initCockroachDB(ctx context.Context, db sql.DB) error {
+func initCockroachDB(ctx context.Context, db *sql.DB) error {
 	const query = `CREATE DATABASE projectmanagement;
 		CREATE TABLE projectmanagement.task(
 			id uuid primary key not null,
@@ -66,7 +66,7 @@ func initCockroachDB(ctx context.Context, db sql.DB) error {
 	return err
 }
 
-func truncateCockroachDB(ctx context.Context, db sql.DB) error {
+func truncateCockroachDB(ctx context.Context, db *sql.DB) error {
 	const query = `truncate projectmanagement.task`
 	_, err := db.ExecContext(ctx, query)
 	return err
@@ -87,11 +87,11 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 	require.NoError(t, err, "Failed to open connection to CockroachDB")
 	defer db.Close()
 
-	err = initCockroachDB(ctx, *db)
+	err = initCockroachDB(ctx, db)
 	require.NoError(t, err, "Failed to initialize CockroachDB")
-	defer truncateCockroachDB(ctx, *db)
+	defer truncateCockroachDB(ctx, db)
 
-	tdbr := task.DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: db}
 
 	now := time.Now()
 
@@ -111,7 +111,7 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		defer truncateCockroachDB(ctx, *db)
+		defer truncateCockroachDB(ctx, db)
 
 		err = tdbr.Save(ctx, *tt)
 		require.NoError(t, err, "Save returned error")
@@ -140,7 +140,7 @@ func TestIntegrationDBRepoSaveDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := task.DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: db}
 
 	err = tdbr.Save(ctx, *task.New())
 	require.Error(t, err, "Save did not return error")
@@ -161,11 +161,11 @@ func TestIntegrationDBRepoGetNonexistent(t *testing.T) {
 	require.NoError(t, err, "Failed to open connection to CockroachDB")
 	defer db.Close()
 
-	err = initCockroachDB(ctx, *db)
+	err = initCockroachDB(ctx, db)
 	require.NoError(t, err, "Failed to initialize CockroachDB")
-	defer truncateCockroachDB(ctx, *db)
+	defer truncateCockroachDB(ctx, db)
 
-	tdbr := task.DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.NoError(t, err, "Get returned error")
@@ -189,7 +189,7 @@ func TestIntegrationDBRepoGetDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := task.DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.Error(t, err, "Get did not return error")

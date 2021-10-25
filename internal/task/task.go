@@ -10,8 +10,8 @@ import (
 type Task struct {
 	ID          string     `json:"id"`
 	Description string     `json:"description"`
-	DateDue     *time.Time `json:"dateDue,string"`
-	DateCreated time.Time  `json:"dateCreated,string"`
+	DateDue     *time.Time `json:"dateDue"`
+	DateCreated time.Time  `json:"dateCreated"`
 	DateUpdated time.Time  `json:"dateUpdated"`
 }
 

@@ -3,9 +3,11 @@ BINARY_NAME=go-rest-template
 GO_CMD=go
 GOFMT_CMD=gofmt
 MOCKGEN_CMD=mockery
+STATICCHECK_CMD=staticcheck
 
 all: test build
 install:
+	$(GO_CMD) install honnef.co/go/tools/cmd/staticcheck@latest
 	$(GO_CMD) install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.8.3
 build:
 	$(GO_CMD) build -o $(BINARY_NAME)
@@ -16,6 +18,9 @@ generate:
 	$(MOCKGEN_CMD) --dir internal/task --output internal/task/mocks --all
 format:
 	$(GOFMT_CMD) -w -s .
+check:
+	$(GO_CMD) vet ./...
+	$(STATICCHECK_CMD) ./...
 test:
 	$(GO_CMD) test -race -covermode=atomic -coverprofile cover.out ./...
 testshort:

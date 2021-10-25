@@ -1,9 +1,10 @@
-package healthcheck
+package healthcheck_test
 
 import (
 	"context"
 	"errors"
 	"github.com/jaredpetersen/go-health/health"
+	"github.com/jaredpetersen/go-rest-template/internal/healthcheck"
 	redismock "github.com/jaredpetersen/go-rest-template/internal/redis/mocks"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,7 @@ func TestBuildRedisHealthCheckFuncStateWarn(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Ping", ctx).Return(errors.New("bad ping"))
 
-	redisHealthCheckFunc := BuildRedisHealthCheckFunc(&rdb)
+	redisHealthCheckFunc := healthcheck.BuildRedisHealthCheckFunc(&rdb)
 	require.NotNil(t, redisHealthCheckFunc)
 
 	healthStatus := redisHealthCheckFunc(ctx)
@@ -30,7 +31,7 @@ func TestBuildRedisHealthCheckFuncStateUp(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Ping", ctx).Return(nil)
 
-	redisHealthCheckFunc := BuildRedisHealthCheckFunc(&rdb)
+	redisHealthCheckFunc := healthcheck.BuildRedisHealthCheckFunc(&rdb)
 	require.NotNil(t, redisHealthCheckFunc)
 
 	healthStatus := redisHealthCheckFunc(ctx)

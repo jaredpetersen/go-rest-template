@@ -1,4 +1,4 @@
-package healthcheck
+package healthcheck_test
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"fmt"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/jaredpetersen/go-health/health"
+	"github.com/jaredpetersen/go-rest-template/internal/healthcheck"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -64,7 +65,7 @@ func TestBuildDBHealthCheckFuncStateDown(t *testing.T) {
 	require.NoError(t, err, "Failed to open connection to CockroachDB")
 	defer db.Close()
 
-	dbHealthCheckFunc := BuildDBHealthCheckFunc(db)
+	dbHealthCheckFunc := healthcheck.BuildDBHealthCheckFunc(db)
 	require.NotNil(t, dbHealthCheckFunc)
 
 	// Simulate a database outage
@@ -90,10 +91,10 @@ func TestBuildDBHealthCheckFuncStateUp(t *testing.T) {
 	require.NoError(t, err, "Failed to open connection to CockroachDB")
 	defer db.Close()
 
-	dbHealthCheckFunc := BuildDBHealthCheckFunc(db)
+	dbHealthCheckFunc := healthcheck.BuildDBHealthCheckFunc(db)
 	require.NotNil(t, dbHealthCheckFunc)
 
 	healthStatus := dbHealthCheckFunc(ctx)
 	assert.Equal(t, health.StateUp, healthStatus.State)
-	assert.Equal(t, DBDetails{ConnectionsInUse: 0, ConnectionsIdle: 1}, healthStatus.Details)
+	assert.Equal(t, healthcheck.DBDetails{ConnectionsInUse: 0, ConnectionsIdle: 1}, healthStatus.Details)
 }

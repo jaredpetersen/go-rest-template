@@ -1,10 +1,11 @@
-package app
+package app_test
 
 import (
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jaredpetersen/go-rest-template/internal/app"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -28,7 +29,7 @@ func TestHandleTaskGet(t *testing.T) {
 	tskMgr.On("Get", mock.Anything, tsk.ID).Return(tsk, nil)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Make request
@@ -49,7 +50,7 @@ func TestHandleTaskGetError(t *testing.T) {
 	tskMgr.On("Get", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("failure to get task"))
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Make request
@@ -68,7 +69,7 @@ func TestHandleTaskGetNotFound(t *testing.T) {
 	tskMgr.On("Get", mock.Anything, mock.AnythingOfType("string")).Return(nil, nil)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Make request
@@ -87,7 +88,7 @@ func TestHandleTaskSave(t *testing.T) {
 	tskMgr.On("Save", mock.Anything, mock.Anything).Return(nil)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Set up request body
@@ -124,7 +125,7 @@ func TestHandleTaskSaveBadBody(t *testing.T) {
 	tskMgr.On("Save", mock.Anything, mock.Anything).Return(nil)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Set up request body without valid JSON
@@ -146,7 +147,7 @@ func TestHandleTaskSaveMissingBodyFields(t *testing.T) {
 	tskMgr.On("Save", mock.Anything, mock.Anything).Return(nil)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Set up invalid request body
@@ -174,7 +175,7 @@ func TestHandleTaskSaveError(t *testing.T) {
 	tskMgr.On("Save", mock.Anything, mock.Anything).Return(errors.New("failure to save task"))
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.TaskManager = &tskMgr
 
 	// Set up request body

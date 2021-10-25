@@ -1,9 +1,10 @@
-package task
+package task_test
 
 import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"testing"
 	"time"
 
@@ -90,19 +91,19 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 	require.NoError(t, err, "Failed to initialize CockroachDB")
 	defer truncateCockroachDB(ctx, *db)
 
-	tdbr := DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: *db}
 
 	now := time.Now()
 
-	var tests = []*Task{
-		New(),
-		func() *Task {
-			tsk := New()
+	var tests = []*task.Task{
+		task.New(),
+		func() *task.Task {
+			tsk := task.New()
 			tsk.Description = "Update resumé"
 			return tsk
 		}(),
-		func() *Task {
-			tsk := New()
+		func() *task.Task {
+			tsk := task.New()
 			tsk.Description = "Call veterinarian"
 			tsk.DateDue = &now
 			return tsk
@@ -139,9 +140,9 @@ func TestIntegrationDBRepoSaveDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: *db}
 
-	err = tdbr.Save(ctx, *New())
+	err = tdbr.Save(ctx, *task.New())
 	require.Error(t, err, "Save did not return error")
 }
 
@@ -164,7 +165,7 @@ func TestIntegrationDBRepoGetNonexistent(t *testing.T) {
 	require.NoError(t, err, "Failed to initialize CockroachDB")
 	defer truncateCockroachDB(ctx, *db)
 
-	tdbr := DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: *db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.NoError(t, err, "Get returned error")
@@ -188,7 +189,7 @@ func TestIntegrationDBRepoGetDBError(t *testing.T) {
 
 	// Do not initialize database tables
 
-	tdbr := DBRepo{DB: *db}
+	tdbr := task.DBRepo{DB: *db}
 
 	tsk, err := tdbr.Get(ctx, uuid.NewString())
 	require.Error(t, err, "Get did not return error")

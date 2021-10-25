@@ -1,9 +1,10 @@
-package redis
+package redis_test
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jaredpetersen/go-rest-template/internal/redis"
 	"testing"
 	"time"
 
@@ -69,9 +70,9 @@ func setupRedis(ctx context.Context) (*redisContainer, error) {
 }
 
 func TestNew(t *testing.T) {
-	config := Config{URI: "redis://localhost:6379"}
+	config := redis.Config{URI: "redis://localhost:6379"}
 
-	rdb, err := New(config)
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Returned error")
 	if assert.NotNil(t, rdb, "Client is nil") {
 		defer rdb.Close()
@@ -79,9 +80,9 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewReturnsConfigError(t *testing.T) {
-	config := Config{URI: "invaliduri"}
+	config := redis.Config{URI: "invaliduri"}
 
-	rdb, err := New(config)
+	rdb, err := redis.New(config)
 	assert.Error(t, err, "Returned error")
 	if !assert.Nil(t, rdb, "Client is nil") {
 		defer rdb.Close()
@@ -98,8 +99,8 @@ func TestIntegrationPing(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -117,8 +118,8 @@ func TestIntegrationGetNoKey(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -138,8 +139,8 @@ func TestIntegrationSetGet(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -188,8 +189,8 @@ func TestIntegrationSetTTL(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -215,8 +216,8 @@ func TestIntegrationSetTTLNoExpiration(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -239,8 +240,8 @@ func TestIntegrationTTLNoKey(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 
@@ -259,8 +260,8 @@ func TestIntegrationCloset(t *testing.T) {
 	require.NoError(t, err, "Failed to start up Redis container")
 	defer redisContainer.Terminate(ctx)
 
-	config := Config{URI: redisContainer.URI}
-	rdb, err := New(config)
+	config := redis.Config{URI: redisContainer.URI}
+	rdb, err := redis.New(config)
 	require.NoError(t, err, "Client instantiation error")
 	defer rdb.Close()
 }

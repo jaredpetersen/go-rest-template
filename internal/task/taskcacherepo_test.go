@@ -1,9 +1,10 @@
-package task
+package task_test
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"testing"
 	"time"
 
@@ -16,12 +17,12 @@ import (
 func TestCacheRepoSave(t *testing.T) {
 	ctx := context.Background()
 
-	tsk := New()
+	tsk := task.New()
 
 	rdb := redismock.Client{}
 	rdb.On("Set", mock.Anything, "task."+tsk.ID, mock.MatchedBy(taskMatcher(*tsk)), time.Duration(0)).Return(nil)
 
-	tcr := CacheRepo{Redis: &rdb}
+	tcr := task.CacheRepo{Redis: &rdb}
 
 	err := tcr.Save(ctx, *tsk)
 	assert.NoError(t, err, "Returned error")
@@ -32,16 +33,16 @@ func TestCacheRepoSave(t *testing.T) {
 func TestCacheRepoSaveReturnsRedisError(t *testing.T) {
 	ctx := context.Background()
 
-	task := New()
+	tsk := task.New()
 
 	expectedErr := errors.New("Failed")
 
 	rdb := redismock.Client{}
 	rdb.On("Set", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(expectedErr)
 
-	tcr := CacheRepo{Redis: &rdb}
+	tcr := task.CacheRepo{Redis: &rdb}
 
-	err := tcr.Save(ctx, *task)
+	err := tcr.Save(ctx, *tsk)
 	assert.EqualError(t, err, expectedErr.Error(), "Did not return error")
 }
 
@@ -55,11 +56,11 @@ func TestCacheRepoGet(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, "task."+id).Return(&storedTask, nil)
 
-	tcr := CacheRepo{Redis: &rdb}
+	tcr := task.CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.NoError(t, err, "Returned error")
-	assert.NotEqual(t, &tsk, Task{Description: description}, "Task is incorrect")
+	assert.NotEqual(t, &tsk, task.Task{Description: description}, "Task is incorrect")
 
 	rdb.AssertExpectations(t)
 }
@@ -72,7 +73,7 @@ func TestCacheRepoGetNotExists(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, "task."+id).Return(nil, nil)
 
-	tcr := CacheRepo{Redis: &rdb}
+	tcr := task.CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.NoError(t, err, "Returned error")
@@ -91,7 +92,7 @@ func TestCacheRepoGetReturnsRedisError(t *testing.T) {
 	rdb := redismock.Client{}
 	rdb.On("Get", mock.Anything, mock.Anything).Return(nil, expectedError)
 
-	tcr := CacheRepo{Redis: &rdb}
+	tcr := task.CacheRepo{Redis: &rdb}
 
 	tsk, err := tcr.Get(ctx, id)
 	assert.Nil(t, tsk, "Task should be nil")

@@ -1,7 +1,8 @@
-package task
+package task_test
 
 import (
 	"encoding/json"
+	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -9,9 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func taskMatcher(expectedTask Task) func(value []byte) bool {
+func taskMatcher(expectedTask task.Task) func(value []byte) bool {
 	return func(value []byte) bool {
-		var unmarshaledTask Task
+		var unmarshaledTask task.Task
 		err := json.Unmarshal(value, &unmarshaledTask)
 		if err != nil {
 			return false
@@ -23,11 +24,11 @@ func taskMatcher(expectedTask Task) func(value []byte) bool {
 
 func isValidUUID(id string) bool {
 	_, err := uuid.Parse(id)
-	return (err == nil)
+	return err == nil
 }
 
 func TestNew(t *testing.T) {
-	tsk := New()
+	tsk := task.New()
 
 	assert.True(t, isValidUUID(tsk.ID), "Did not generate valid ID")
 
@@ -39,6 +40,6 @@ func TestNew(t *testing.T) {
 
 	assert.Equal(t, tsk.DateCreated, tsk.DateUpdated, "DateCreated and DateUpdated are not equal")
 
-	expectedTask := Task{ID: tsk.ID, DateCreated: tsk.DateCreated, DateUpdated: tsk.DateUpdated}
+	expectedTask := task.Task{ID: tsk.ID, DateCreated: tsk.DateCreated, DateUpdated: tsk.DateUpdated}
 	assert.Equal(t, expectedTask, *tsk, "Task is setting more defaults than expected")
 }

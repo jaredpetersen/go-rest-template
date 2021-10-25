@@ -1,10 +1,11 @@
-package app
+package app_test
 
 import (
 	"context"
 	"encoding/json"
 	"github.com/jaredpetersen/go-health/health"
 	"github.com/jaredpetersen/go-rest-template/api"
+	"github.com/jaredpetersen/go-rest-template/internal/app"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -22,7 +23,7 @@ func buildHealthCheckFunc(status health.Status) health.CheckFunc {
 
 func TestHandleLiveness(t *testing.T) {
 	// Set up server
-	a := New()
+	a := app.New()
 
 	// Make request
 	req, err := http.NewRequest(http.MethodGet, "/liveness", nil)
@@ -46,7 +47,7 @@ func TestHandleReadinessStateUp(t *testing.T) {
 	time.Sleep(time.Millisecond * 200)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.HealthMonitor = healthMonitor
 
 	// Make request
@@ -80,7 +81,7 @@ func TestHandleReadinessStateWarn(t *testing.T) {
 	time.Sleep(time.Millisecond * 200)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.HealthMonitor = healthMonitor
 
 	// Make request
@@ -114,7 +115,7 @@ func TestHandleReadinessStateDown(t *testing.T) {
 	time.Sleep(time.Millisecond * 200)
 
 	// Set up server
-	a := New()
+	a := app.New()
 	a.HealthMonitor = healthMonitor
 
 	// Make request

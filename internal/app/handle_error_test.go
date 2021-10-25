@@ -1,6 +1,7 @@
-package app
+package app_test
 
 import (
+	"github.com/jaredpetersen/go-rest-template/internal/app"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -11,7 +12,7 @@ import (
 
 func TestHandleNotFound(t *testing.T) {
 	// Set up server
-	a := New()
+	a := app.New()
 
 	// Make request
 	req, err := http.NewRequest(http.MethodGet, "/bleepbloop", nil)
@@ -25,7 +26,7 @@ func TestHandleNotFound(t *testing.T) {
 
 func TestHandleMethodNotAllowed(t *testing.T) {
 	// Set up server
-	a := New()
+	a := app.New()
 
 	// Make request
 	req, err := http.NewRequest(http.MethodPost, "/readiness", nil)

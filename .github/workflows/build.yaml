@@ -16,6 +16,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Install tool dependencies
         run: make install
+      - name: Generate code
+        run: make generate
       - name: Static code analysis
         run: make check
       - name: Validate formatting

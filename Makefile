@@ -7,8 +7,9 @@ STATICCHECK_CMD=staticcheck
 
 all: test build
 install:
-	$(GO_CMD) install honnef.co/go/tools/cmd/staticcheck@latest
 	$(GO_CMD) install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@v1.8.3
+	$(GO_CMD) install github.com/vektra/mockery/v2@latest
+	$(GO_CMD) install honnef.co/go/tools/cmd/staticcheck@latest
 build:
 	$(GO_CMD) build -o $(BINARY_NAME)
 generate:

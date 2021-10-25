@@ -20,6 +20,8 @@ jobs:
         run: make generate
       - name: Static code analysis
         run: make check
+      - name: Validate formatting debug
+        run: gofmt -s -l .
       - name: Validate formatting
         run: if [ "$(gofmt -s -l . | wc -l)" -gt 0 ]; then exit 1; fi
       - name: Build

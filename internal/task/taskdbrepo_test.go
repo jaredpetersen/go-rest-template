@@ -120,7 +120,7 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 		require.NotNil(t, savedTsk, "Get did not return a task")
 
 		if tt.DateDue != nil {
-			assert.Equal(t, *tt.DateDue, *savedTsk.DateDue)
+			assert.Equal(t, tt.DateDue.Round(time.Microsecond), *savedTsk.DateDue)
 		} else {
 			assert.Nil(t, savedTsk.DateDue)
 		}

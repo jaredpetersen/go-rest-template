@@ -8,7 +8,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-cmp/cmp"
 	"github.com/google/uuid"
 	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/stretchr/testify/assert"
@@ -119,7 +118,12 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 		savedTsk, err := tdbr.Get(ctx, tt.ID)
 		require.NoError(t, err, "Get returned error")
 		require.NotNil(t, savedTsk, "Get did not return a task")
-		assert.True(t, cmp.Equal(*tt, *savedTsk), "Saved task is not the same:\n"+cmp.Diff(*tt, *savedTsk))
+
+		if tt.DateDue != nil {
+			assert.Equal(t, *tt.DateDue, *savedTsk.DateDue)
+		} else {
+			assert.Nil(t, savedTsk.DateDue)
+		}
 	}
 }
 

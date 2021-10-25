@@ -124,13 +124,13 @@ func TestIntegrationDBRepoSaveGet(t *testing.T) {
 		// Evaluate time using microseconds since that's as precise as CockroachDB goes
 
 		if tt.DateDue != nil {
-			assert.Equal(t, tt.DateDue.Round(time.Microsecond), *savedTsk.DateDue)
+			assert.Equal(t, tt.DateDue.Truncate(time.Microsecond), *savedTsk.DateDue)
 		} else {
 			assert.Nil(t, savedTsk.DateDue)
 		}
 
-		assert.Equal(t, tt.DateCreated.Round(time.Microsecond), savedTsk.DateCreated)
-		assert.Equal(t, tt.DateUpdated.Round(time.Microsecond), savedTsk.DateUpdated)
+		assert.Equal(t, tt.DateCreated.Truncate(time.Microsecond), savedTsk.DateCreated)
+		assert.Equal(t, tt.DateUpdated.Truncate(time.Microsecond), savedTsk.DateUpdated)
 	}
 }
 

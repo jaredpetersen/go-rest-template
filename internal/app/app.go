@@ -3,10 +3,10 @@ package app
 import (
 	"context"
 	"encoding/json"
-	"github.com/jaredpetersen/go-health/health"
 	"net/http"
 
 	"github.com/go-chi/chi"
+	"github.com/jaredpetersen/go-health/health"
 	"github.com/jaredpetersen/go-rest-template/api"
 	"github.com/jaredpetersen/go-rest-template/internal/task"
 	"github.com/rs/zerolog/log"
@@ -42,8 +42,6 @@ func (a *app) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 }
 
 func receive(req *http.Request, data interface{}) error {
-	// raw, _ := io.ReadAll(req.Body)
-	// log.Debug().Str("raw", string(raw)).Send()
 	return json.NewDecoder(req.Body).Decode(data)
 }
 
